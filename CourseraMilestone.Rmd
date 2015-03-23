@@ -1,0 +1,104 @@
+---
+title: "Coursera Capstone Milestone"
+author: "wpmcdonald"
+date: "March 21, 2015"
+output: html_document
+---
+
+# Introduction
+This project is an investigation into using data scince in the area of Natual Language Processing and Text Mining
+
+Natural language processing (NLP) is a field of computer science, artificial intelligence, and linguistics concerned with the interactions between computers and human (natural) languages. As such, NLP is related to the area of human–computer interaction. Many challenges in NLP involve natural language understanding, that is, enabling computers to derive meaning from human or natural language input, and others involve natural language generation. Wikipedia
+
+Text Mining refers to the process of deriving high-quality information from text. High-quality information is typically derived through the devising of patterns and trends through means such as statistical pattern learning. 
+Text mining usually involves the process of structuring the input text (usually parsing, along with the addition of some derived linguistic features and the removal of others. Wikipedia: https://en.wikipedia.org/wiki/Text_mining
+
+# Data Acquisition
+Sample text files were provided by SwiftKey in English, German, and Finnish, and Russion
+We will only deal with English version of the supplied data files
+
+ * Download the data from "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
+ * Import into RStudio
+ * Sample the data
+ * Tokenize
+ * Profanity Filtering
+
+
+```{r cache = T}
+setwd( "/Users/williammcdonald/CourseraCapstoneData/")
+twitter <- readLines("twitter.txt", skipNul = TRUE)
+news <- readLines("news.txt", skipNul = TRUE)
+blogs <- readLines("blogs.txt", skipNul = TRUE)
+```
+
+Check the size and type of files
+
+```{r }
+summary(twitter)
+summary(news)
+summary(blogs)
+```
+
+Basic file infromation
+
+```{r, echo = FALSE}
+twitl <- length(twitter)
+newsl <- length(news)
+blogl <- length(blogs)
+
+twitc <- sum(nchar(twitter))
+newsc <- sum(nchar(news))
+blogc <- sum(nchar(blogs))
+
+twitmax <- max(nchar(twitter))
+newsmax <- max(nchar(news))
+blogmax <- max(nchar(blogs))
+
+twitinfo <- twitc/twitl
+newsinfo <- newsc/newsl
+bloginfo <- blogc/blogl
+
+```
+
+
+```{r plots }
+barplot(c(twitl, newsl, blogl), main = "Lines per file", ylab = 'lines', names.arg = c("Twitter", "News", "Blogs"), col = 404)
+
+barplot(c(twitmax, newsmax, blogmax), main = "Max characters per line", ylab = "characters", names.arg = c("Twitter", "News", "Blogs"), col = 54)
+
+barplot(c(twitinfo, newsinfo, bloginfo), main = 'Characters per line', ylab = "characters", names.arg = c("twitter", "news", "blogs"), col = 254)
+```
+
+Based on the initial exploration, the files are between 900,000 and 2.4 million lines with a maximum number of charaacters per line between 140 (twitter) and 40,000 (blogs). Based on the size of the files, number of lines, and the probable total number of words, analysis of the entire data set will be handled by sampling and statistical inference. 
+
+## Sampling the Data Sets Individually
+We'll start initial sampling at 1%
+```{r sampling}
+twit.smpl <- sample(twitter, size = round(length(twitter)/100))
+news.smpl <- sample(news, size = round(length(news)/100))
+blog.smpl <- sample(blogs, size = round(length(blogs)/100))
+```
+
+## Cleaning Data Set
+```{r libraries, echo =FALSE}
+# Load libraries
+library(tm)
+library(RWeka)
+library(SnowballC)
+source("/Users/williammcdonald/Coursera-DataScienceCapstone/Capstone_helper.R")
+```
+
+Clean text
+
+```{r, echo=FALSE}
+hashtags <- "#[0-9][a-z][A-Z]+"
+special <- c("®","™", "¥", "£", "¢", "€", "#", "_")
+clean.twitter <- cleanText(twit.smpl)
+clean.news <- cleanText(news.smpl)
+clean.blog <- cleanText(blog.smpl)
+len.twit <- sapply(clean.twitter, length)
+len.news <- sapply(clean.news, length)
+len.blog <- sapply(clean.blogs, length)
+```
+
+
