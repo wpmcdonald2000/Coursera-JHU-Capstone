@@ -3,10 +3,16 @@
 #load, save and sample data
 setwd( "/Users/williammcdonald/CourseraCapstoneData/")
 
+
+hashtags <- "#[0-9][a-z][A-Z]+"
+special <- c("®","™", "¥", "£", "¢", "€", "#", "_")
+unicode <- "[^[:print:]]"
+
 # Function to clean and vectorize text files
 cleanText <- function(text){
         # remove all hashtags, substitute for profanity, remove special characters 
-        x <- gsub(hashtags, " ", text)
+        x <- gsub(unicode, " ", text)
+        x <- gsub(hashtags, " ", x)
         x <- gsub(paste0('\\<', naughty , '\\>', collapse = '|'), '!$?%', x)
         x <- gsub(paste0(special, collapse = '|'), " ", x) 
         # Clean text

@@ -1,0 +1,51 @@
+search()
+library(ggplot2)
+install.package("ggplot2")
+install.packages("ggplot2")
+library(ggplot2)
+search()
+install.packages("RMYSQL")
+R CMD INSTALL RMySQL_0.9-3.tar.gz
+require(utils,quietly=TRUE)#
+# Find first existing Mysql home #
+reg <- readRegistry("SOFTWARE\\MySQL AB", hive="HLM", maxdepth=2)#
+if (!is.null(reg)){#
+	cat("Try setting MYSQL_HOME to one of the following (you may have to use the non-8dot3 file name):\r\n\r\n")#
+	invisible(lapply(reg,function(i){#
+		MySQLhome <- file.path(i$Location,".")#
+		if (utils::file_test("-d",MySQLhome) &&#
+			utils::file_test("-d",file.path(MySQLhome,"include")) &&#
+			utils::file_test("-d",file.path(MySQLhome,"lib/opt"))){#
+			cat(MySQLhome,"\r\n",sep='')#
+		}#
+	}#
+	))#
+}#
+q(save="no")
+bitmap()
+png()
+quartz()
+pdf()
+2^38
+library(swirl)
+swirl()
+library(UsingR)
+swirl()
+load("/Users/williammcdonald/rawweeklystats.rda")
+library(RODBC)
+con <- odbcDriverConnect("Driver = {Microsoft Access Driver (*.mdb, *.accbd)}; DB = Users/williammcdonald/OneDrive/Contoso_Sales/ContosoSales.accdb ")
+ch <- odbcConnect("Users/williammcdonald/OneDrive/Contoso_Sales/ContosoSales.accdb")
+load("/Users/williammcdonald/rawweeklystats.rda")
+source("http://bioconductor.org/biocLite.R")
+biocLite("EBImage")
+library(EBImage)
+getwd()
+setwd("/Users/williammcdonald/Coursera-JHU-Capstone")
+rconsole
+rconsole.R
+list
+dir
+getwd()
+ls
+ls()
+getwd()

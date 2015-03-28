@@ -7,6 +7,7 @@ library(tau)
 library(SnowballC)
 library(compiler)
 library(wordcloud)
+library(slam)
 
 # Load Data using readLines 
 # Test for file encoding
@@ -24,33 +25,22 @@ naughty <- readLines("/Users/williammcdonald/CourseraCapstoneData/swearWords.txt
 # CLose connections
 closeAllConnections()
 
-# save files to RData, remove from memory, call for later use.
-save(twitter, file = '/Users/williammcdonald/CourseraCapstoneData/twitter.RData')
-save(blogs, file = '/Users/williammcdonald/CourseraCapstoneData/blogs.RData')
-save(news, file = '/Users/williammcdonald/CourseraCapstoneData/news.RData')
+# Pre-cleaning stats?
+twitter.size <- object.size(twitter)
+twitter.char <- sum(nchar(twitter))
+twitter.lines <- length(twitter)
+blogs.size <- object.size(blogs)
+blogs.char <- sum(nchar(blogs))
+blogs.lines <- length(blogs)
+news.size <- object.size(news)
+news.char <- sum(nchar(news))
+news.lines <- length(news)
 
-# Start here
-load('/Users/williammcdonald/CourseraCapstoneData/twitter.RData')
-load('/Users/williammcdonald/CourseraCapstoneData/news.RData')
-load('/Users/williammcdonald/CourseraCapstoneData/blogs.RData')
 
-# Word stats?
-# twitter.char <- sum(nchar(twitter))
-# twitter.lines <- length(twitter)
-# blogs.char <- sum(nchar(blogs))
-# blogs.lines <- length(blogs)
-# news.char <- sum(nchar(news))
-# news.lines <- length(news)
-# twitter.lines
-# twitter.char
-# blogs.lines
-# blogs.char
-# news.lines
-# news.char
 # mean characters per line
-# twitter.char/ twitter.lines
-# blogs.char/ blogs.lines
-# news.char/ news.lines
+twitter.char/ twitter.lines
+blogs.char/ blogs.lines
+news.char/ news.lines
 
 source("/Users/williammcdonald/Coursera-JHU-Capstone/Capstone_helper.R")
 hashtags <- "#[0-9][a-z][A-Z]+"
@@ -59,6 +49,18 @@ special <- c("®","™", "¥", "£", "¢", "€", "#")
 twitter <- cleanText(twitter)
 news <- cleanText(news)
 blogs <- cleanText(blogs)
+
+# Save the cleaned files to disk
+# save files to RData, remove from memory, call for later use.
+save(twitter, file = '/Users/williammcdonald/CourseraCapstoneData/twitter.RData')
+save(blogs, file = '/Users/williammcdonald/CourseraCapstoneData/blogs.RData')
+save(news, file = '/Users/williammcdonald/CourseraCapstoneData/news.RData')
+save(naughty, file = '/Users/williammcdonald/CourseraCapstoneData/naughty.RData')
+
+# Start here for after cleaning result.
+load('/Users/williammcdonald/CourseraCapstoneData/twitter.RData')
+load('/Users/williammcdonald/CourseraCapstoneData/news.RData')
+load('/Users/williammcdonald/CourseraCapstoneData/blogs.RData')
 
 twit.char <- sapply(twitter, nchar)
 twit.charlen <- sapply(twit.char, sum)
@@ -80,10 +82,6 @@ boxplot(news.charlen, main = "Characters per News Item")
 boxplot(blogs.wordlen, main = "Words per Blogs Item")
 boxplot(blogs.charlen, main = "Characters per Blog Item")
 
-# Save cleaned text files split into words
-#
-#
-#
 
 # 1% Sampling
 twitter.smpl <- sample(twitter, size = round(length(twitter)/100))
@@ -92,6 +90,19 @@ blogs.smpl <- sample(blogs, size = round(length(blogs)/100))
 rm(blogs)
 news.smpl <- sample(news, size = round(length(news)/100))
 rm(news)
+
+# unlist
+
+# Save sampled files to disk
+save(twitter.smpl, file = '/Users/williammcdonald/CourseraCapstoneData/twittersample.RData')
+save(blogs.smpl, file = '/Users/williammcdonald/CourseraCapstoneData/blogssample.RData')
+save(news.smpl, file = '/Users/williammcdonald/CourseraCapstoneData/newssample.RData')
+
+# Start here for sampled files
+load('/Users/williammcdonald/CourseraCapstoneData/twittersample.RData')
+load('/Users/williammcdonald/CourseraCapstoneData/newssample.RData')
+load('/Users/williammcdonald/CourseraCapstoneData/blogssample.RData')
+
 
 # len.twit <- sapply(clean.twitter, length)
 # len.news <- sapply(clean.news, length)
@@ -117,9 +128,12 @@ createCorp <- function(text){
         return(x)        
 }
 
+# Combine samples
+sampleText <- c(twitter.smpl, news.smpl, blogs.smpl)
 blogs.corp <- createCorp(blogs.smpl)
 news.corp <- createCorp(news.smpl)
 twitter.corp <- createCorp(twitter.smpl)
+text.corp <- createCorp(sampleText)
 
 rm(blogs.smpl)
 rm(news.smpl)
@@ -142,17 +156,26 @@ wordcloud(blogs.corp, scale=c(8,0.3),
           rot.per=0.5, use.r.layout=FALSE,
           colors=brewer.pal(6, "Dark2"))
 
+wordcloud(text.corp, scale=c(8,0.3),
+          min.freq=5, max.words=100, random.order=FALSE,
+          rot.per=0.5, use.r.layout=FALSE,
+          colors=brewer.pal(6, "Dark2"))
 
 # Create document matrix 
 # Note some seem to be converting to a dataframe?
 twitter.tdm <- TermDocumentMatrix(twitter.corp)
 news.tdm <- TermDocumentMatrix(news.corp)
 blogs.tdm <- TermDocumentMatrix(blogs.corp)
+text.tdm <- TermDocumentMatrix(text.corp)
 
 # frequent terms and associations
 twitter.freq <- findFreqTerms(twitter.tdm, lowfreq = 30)
 news.freq <- findFreqTerms(news.tdm, lowfreq = 30)
 blogs.freq <- findFreqTerms(blogs.tdm, lowfreq = 30)
+text.freq <- findFreqTerms(text.tdm, lowfreq = 30)
+
+# Remove sparse terms
+text.tdm_ns <- removeSparseTerms(text.tdm, 0.995)
 
 # cleancorp.assoc <- findAssocs(textcorp.tdm, dimnames(textcorp.tdm)$Terms[1:40], rep(.5, 40))
 
@@ -170,3 +193,6 @@ names(df) <- c("Terms", "Freq")
 
 ggplot(df, aes(x = Terms, y = Freq)) + geom_bar(stat = 'identity', color = 'white', fill = 'red') + coord_flip()
 
+" |><^{}~&@\\]\\[=+\\r\\n\\t.,;:\\()?!-/"
+unigramTokenizer <- function(x) NGramTokenizer(
+        x, Weka_control(min = 1, max = 1, delimiters = delimiters))
