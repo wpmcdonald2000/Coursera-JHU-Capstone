@@ -84,11 +84,11 @@ boxplot(blogs.charlen, main = "Characters per Blog Item")
 
 
 # 1% Sampling
-twitter.smpl <- sample(twitter, size = round(length(twitter)/100))
+twitter.smpl <- sample(twitter, size = 10000)
 rm(twitter)
-blogs.smpl <- sample(blogs, size = round(length(blogs)/100))
+blogs.smpl <- sample(blogs, size = 10000)
 rm(blogs)
-news.smpl <- sample(news, size = round(length(news)/100))
+news.smpl <- sample(news, size = 10000)
 rm(news)
 
 # unlist

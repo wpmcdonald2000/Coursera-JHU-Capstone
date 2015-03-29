@@ -37,8 +37,7 @@ We will only deal with English version of the supplied data files
 After testing for the encoding of the supplied files the data was downloaded using the base package "readLines" function for each of the three types oftext files; news items, blog entries, and twitter feeds. 
 
             
-
-```r
+```{r Load  }
 # load('/Users/williammcdonald/CourseraCapstoneData/twitter.RData')
 # load('/Users/williammcdonald/CourseraCapstoneData/news.RData')
 # load('/Users/williammcdonald/CourseraCapstoneData/blogs.RData')
@@ -50,23 +49,48 @@ After testing for the encoding of the supplied files the data was downloaded usi
 
 From there we can proceed to determine some basic statistics of the data sets such as Overall file size, number of lines of text, minimum, maximum, and average characters or distinct words per line as well as the number of unique words in each file individually. 
 
+```{r Stats, echo=FALSE}
+#Basic Stats
+twitter.size <- 301.4 #object.size(twitter)
+twitter.char <- 162096241 #sum(nchar(twitter))
+twitter.lines <- 2360148 #length(twitter)
+twittotal.words <- 36790814 #strsplit(twitter, '\\W')
+twit.words <- 481068 #length(unique(unlist(strsplit(twitter, "\\W"))))
 
+blogs.size <- 1674.5 #object.size(blogs)
+blogs.char <- 206824505 #sum(nchar(blogs))
+blogs.lines <- 899288 #length(blogs)
+blogtotal.words <- 37566572 #length(strsplit(twitter, "\\W"))
+blogs.words <- 369209 #length(unique(unlist(strsplit(twitter, "\\W"))))
 
+news.size <- 249.6 #object.size(news)
+news.char <- 203223159 #sum(nchar(news))
+news.lines <- 1010242 # length(news)
+newstotal.words <- 34866445 #length(strsplit(twitter, "\\W"))
+news.words <- 277667 #length(unique(unlist(strsplit(news, "\\W"))))
 
-Basic summary file information before clean up .
+# mean characters per line
+twit.mean <- round(twitter.char/ twitter.lines, 2)
+blog.mean <- round(blogs.char/ blogs.lines, 2)
+news.mean <- round(news.char/ news.lines, 2)
 
-```r
-library(knitr)
-kable(df)
+Size <- c(twitter.size, news.size, blogs.size)
+Corpus <- c('Twitter.EN', 'News.EN', 'Blogs.EN')
+Lines <- c(twitter.lines, news.lines, blogs.lines)
+Average <- c(twit.mean, news.mean, blog.mean )
+Total <- c(twittotal.words,newstotal.words,blogtotal.words)
+Unique <- c(twit.words,news.words,blogs.words)
+
+df <- rbind(data.frame(Corpus, Size , Lines, Average, Total, Unique))
+names(df) <- c("Corpus","Size (Mb)", "Total # of Lines", "Mean Characters per Line", "Total Words", "Total Unique Words")
 ```
 
 
-
-|Corpus     | Size (Mb)| Total # of Lines| Mean Characters per Line| Total Words| Total Unique Words|
-|:----------|---------:|----------------:|------------------------:|-----------:|------------------:|
-|Twitter.EN |     301.4|          2360148|                    68.68|    36790814|             481068|
-|News.EN    |     249.6|          1010242|                   201.16|    34866445|             277667|
-|Blogs.EN   |    1674.5|           899288|                   229.99|    37566572|             369209|
+Basic summary file information before clean up .
+```{r Kable}
+library(knitr)
+kable(df)
+```
 
 # Sampling
 Based on the initial exploration, the files are between .9  and 2.4 million lines with a maximum number of charaacters per line between 140 (twitter) and 40,000 (blogs). Based on the size of the files, number of lines, and the number of words, analysis of the entire data set will be handled by sampling and statistical inference for faster processing. 
@@ -74,14 +98,19 @@ Based on the initial exploration, the files are between .9  and 2.4 million line
 ## Sampling the Data Sets Individually
 We'll start initial sampling at approximately 1% of the respective  number of lines. This runs teh risk of under representing the number of Twitter words in favor of the other two texts and further exploration might be necessary to determine if having separate prediction engines for Tweets vs. News items vs. Blog entries. For initial exploration, however, I beieve this will be an adequate start.
 
-
-```r
+```{r Sampling}
 # twit.smpl <- sample(twitter, size = 20000)
 # news.smpl <- sample(news, size = 10000)
 # blog.smpl <- sample(blogs, size = 10000)
 ```
 
+```{r, echo=FALSE}
+load('/Users/williammcdonald/CourseraCapstoneData/twittersample.RData')
+load('/Users/williammcdonald/CourseraCapstoneData/newssample.RData')
+load('/Users/williammcdonald/CourseraCapstoneData/blogssample.RData')
+load('/Users/williammcdonald/CourseraCapstoneData/naughty.RData')
 
+```
 
 # Tokenization
 Tokenization involves the process of cleaning the texts of the following information:
@@ -96,21 +125,14 @@ Tokenization involves the process of cleaning the texts of the following informa
 In order to regularize the cleanup, a short function was created to clean the sampled texts in a uniform manner. 
 Additional libraries were also imported to complete the cleanup and display the results.
 
-
-```r
+```{r Cleaning}
 library(tm)
 library(RWeka)
 library(SnowballC)
 library(wordcloud)
 library(slam)
 library(ggplot)
-```
 
-```
-## Error in library(ggplot): there is no package called 'ggplot'
-```
-
-```r
 source("/Users/williammcdonald/Coursera-JHU-Capstone/Capstone_helper.R")
 hashtags <- "#[0-9][a-z][A-Z]+"
 special <- c("®","™", "¥", "£", "¢", "€", "#","_")
@@ -135,8 +157,7 @@ cleanText <- function(text){
 # Vectorization and creating a Corpus.
 The samples were then combined into a single text file and then vectorized using the tm VectorCorpus function before further manipulation.
 
-
-```r
+```{r Combine}
 sampleText <- c(twitter.smpl, news.smpl, blogs.smpl)
 
 # text.sample <- cleanText(sampleText)
@@ -149,45 +170,41 @@ sample.corp <- VCorpus(VectorSource(sampleText))
 A wordcloud of the most frequent terms was created for a quick visual study of the landscape of top occuring words.
 
 
-
-```r
+```{r Wordcloud}
 par(mar = c(1,1,1,1))
 wordcloud(sample.corp, scale=c(8,0.3), 
           min.freq=5, max.words=100, random.order=FALSE,
           rot.per=0.5, use.r.layout=FALSE,
           colors=brewer.pal(6, "Dark2"))
-```
 
-![plot of chunk Wordcloud](figure/Wordcloud-1.png) 
+```
 
 # Term Document Matrix. 
 Using the tm package Term Doocument Matrix functionality, we can create a matrix of all the terms in the sample corpus. As a matrix and using the row_sums function in the R slam package, we can get sums of the various terms in the matrix. Sorting in descending order will show us the most freqently used terms in the sample.
 
-
-```r
+```{r tdm}
 text.tdm <- TermDocumentMatrix(sample.corp)
 text.freq <- sort(row_sums(text.tdm),decreasing=TRUE)
 ```
 
 Creating a barplot of the 25 most frequent terms shows that many of them are "stop" words.
 
-
-```r
+```{r plot tdm}
 par(mar = c(5,4,4,2), mgp = c(4,1,0) )
 barplot(text.freq[1:25], main = "Sample count of the 25 most frequent terms", ylab = "Frequency", xlab = "Words", las = 2)
 ```
-
-![plot of chunk plot tdm](figure/plot tdm-1.png) 
 
 
 # n-Grams
 Using the RWeka package, we will attempt to find the most frequently used combinations of 2 and 3 words as a predecessor to a predictive model.
 
-
+```{r loadsample, echo=FALSE}
+load('/Users/williammcdonald/CourseraCapstoneData/cleantext.RData')
+sample.corp <- Corpus(VectorSource(clean.text))
+```
 
 ## Bigram model
-
-```r
+```{r bigram model}
 # Set core options for OSX
 options(mc.cores=1)
 
@@ -201,11 +218,8 @@ colnames(bigramfreq) <- c("Frequency")
 ggplot(bigramfreq) + geom_bar(aes(x=row.names(bigramfreq), y = Frequency), stat = "identity") + labs(x = "Terms", y = "Frequency", title = "Frequency of 2-grams") +coord_flip()
 ```
 
-![plot of chunk bigram model](figure/bigram model-1.png) 
-
 ## Trigram Model
-
-```r
+```{r trigram model}
 trigram <- function(x) NGramTokenizer(x, Weka_control(min = 3, max = 3))
 trigram.tdm <- TermDocumentMatrix(sample.corp, control = list(tokenize = trigram))
 trigramrow <- row_sums(trigram.tdm)
@@ -216,8 +230,6 @@ trigramfreq <- as.data.frame(rowSums(tmp))
 colnames(trigramfreq) <- c("Frequency")
 ggplot(trigramfreq) + geom_bar(aes(x=row.names(trigramfreq), y = Frequency), stat = "identity") + labs(x = "Terms", y = "Frequency", title = "Term Frequency of 3-gram") +coord_flip()
 ```
-
-![plot of chunk trigram model](figure/trigram model-1.png) 
 
 # Conclusions and Next Steps
 
