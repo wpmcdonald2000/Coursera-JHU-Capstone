@@ -187,52 +187,8 @@ Using the RWeka package, we will attempt to find the most frequently used combin
 
 ## Bigram model
 
-```r
-# Set core options for OSX
-options(mc.cores=1)
 
-bigram <- function(x) NGramTokenizer(x, Weka_control(min = 2, max = 2))
-bigram.tdm <- TermDocumentMatrix(sample.corp, control = list(tokenize = bigram))
-bigramrow <- row_sums(bigram.tdm)
-bigram.tdm <- bigram.tdm[which(bigramrow > 500),]
-bigramfreq <- as.data.frame(rowSums(as.matrix(bigram.tdm)))
-colnames(bigramfreq) <- c("Frequency")
 
-ggplot(bigramfreq) + geom_bar(aes(x=row.names(bigramfreq), y = Frequency), stat = "identity") + labs(x = "Terms", y = "Frequency", title = "Frequency of 2-grams") +coord_flip()
-```
 
-![plot of chunk bigram model](figure/bigram model-1.png) 
 
-## Trigram Model
 
-```r
-trigram <- function(x) NGramTokenizer(x, Weka_control(min = 3, max = 3))
-trigram.tdm <- TermDocumentMatrix(sample.corp, control = list(tokenize = trigram))
-trigramrow <- row_sums(trigram.tdm)
-trigram.tdm <- trigram.tdm[which(trigramrow > 75),]
-tmp <- as.matrix(trigram.tdm)
-tmp <- tmp[order(rowSums(tmp), decreasing = TRUE),]
-trigramfreq <- as.data.frame(rowSums(tmp))
-colnames(trigramfreq) <- c("Frequency")
-ggplot(trigramfreq) + geom_bar(aes(x=row.names(trigramfreq), y = Frequency), stat = "identity") + labs(x = "Terms", y = "Frequency", title = "Term Frequency of 3-gram") +coord_flip()
-```
-
-![plot of chunk trigram model](figure/trigram model-1.png) 
-
-# Conclusions and Next Steps
-
-## Observations and Conclusions
-Using the supplied packages, we can show the most often occurring 2 and 3 word combinations, or what are essentially prepositional phrases. The speed of the model leaves a lot to be desired. Since this will need to happen in real time, while a person is typing, the respone will need to be faster than anything these packages provide. Perhaps these can be used to create dictionary of associative probabilities which can be retrieved faster and updated behind the scenes as it "learns" the habits of individual users. 
-
-It was apparent that more time was needed to explore the data sets and to use inferential statistics for multiple sample runs in order to compare resulting bigrams and trigrams. 
-
-In addition, analysis of some of the less frequent terms indicated that the cleaning was not entirely succesful. There still appeared to some randomly occurring characters preceding or superceding words that the cleanText function did not find. I would also like to spend more time figuring ou a way to handle conjunctions, numerical verbs, and chat acronyms or IM shorthand.
-
-## Next
-A lot of addtional work must be done to come close to any kind of predictive model that opeerates in real time.
- 1. Continue developing a more robust cleaning technique.
- 2. Chop up the overall data sets into separate training, testing. and cross validation data sets.
- 3. Determine if predictive models vary  between the different formats: Tweet, Blog, or News.
- 4. Different languages, multi lingual common phrases?
- 5. Develop a strategy for handling profanity. Naughty vs. Nice predicter?
- 6. Figure out how to deploy this as a Shiny.io app!

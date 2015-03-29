@@ -131,7 +131,7 @@ library(RWeka)
 library(SnowballC)
 library(wordcloud)
 library(slam)
-library(ggplot)
+library(ggplot2)
 
 source("/Users/williammcdonald/Coursera-JHU-Capstone/Capstone_helper.R")
 hashtags <- "#[0-9][a-z][A-Z]+"
@@ -191,7 +191,7 @@ Creating a barplot of the 25 most frequent terms shows that many of them are "st
 
 ```{r plot tdm}
 par(mar = c(5,4,4,2), mgp = c(4,1,0) )
-barplot(text.freq[1:25], main = "Sample count of the 25 most frequent terms", ylab = "Frequency", xlab = "Words", las = 2)
+barplot(text.freq[1:25], main = "Most frquent words", ylab = "Frequency", xlab = "Words", las = 2)
 ```
 
 
@@ -204,7 +204,7 @@ sample.corp <- Corpus(VectorSource(clean.text))
 ```
 
 ## Bigram model
-```{r bigram model}
+```{r bigram model, echo=FALSE}
 # Set core options for OSX
 options(mc.cores=1)
 
@@ -212,14 +212,19 @@ bigram <- function(x) NGramTokenizer(x, Weka_control(min = 2, max = 2))
 bigram.tdm <- TermDocumentMatrix(sample.corp, control = list(tokenize = bigram))
 bigramrow <- row_sums(bigram.tdm)
 bigram.tdm <- bigram.tdm[which(bigramrow > 500),]
-bigramfreq <- as.data.frame(rowSums(as.matrix(bigram.tdm)))
+tmp <- as.matrix(bigram.tdm)
+tmp <- tmp[order(rowSums(tmp), decreasing = TRUE),]
+bigramfreq <- as.data.frame(rowSums(tmp))
 colnames(bigramfreq) <- c("Frequency")
+# ggplot(bigramfreq) + geom_bar(aes(x=row.names(bigramfreq), y = Frequency), stat = "identity") + labs(x = "Terms", y = "Frequency", title = "Frequency of 2-grams") +coord_flip()
 
-ggplot(bigramfreq) + geom_bar(aes(x=row.names(bigramfreq), y = Frequency), stat = "identity") + labs(x = "Terms", y = "Frequency", title = "Frequency of 2-grams") +coord_flip()
+```
+```{r bigram plot}
+barplot(bigramfreq$Frequency, names.arg = row.names(bigramfreq), main = "Most frequent Bigrams", ylab = "Frequency", las = 2)
 ```
 
 ## Trigram Model
-```{r trigram model}
+```{r trigram model, echo=FALSE}
 trigram <- function(x) NGramTokenizer(x, Weka_control(min = 3, max = 3))
 trigram.tdm <- TermDocumentMatrix(sample.corp, control = list(tokenize = trigram))
 trigramrow <- row_sums(trigram.tdm)
@@ -228,8 +233,12 @@ tmp <- as.matrix(trigram.tdm)
 tmp <- tmp[order(rowSums(tmp), decreasing = TRUE),]
 trigramfreq <- as.data.frame(rowSums(tmp))
 colnames(trigramfreq) <- c("Frequency")
-ggplot(trigramfreq) + geom_bar(aes(x=row.names(trigramfreq), y = Frequency), stat = "identity") + labs(x = "Terms", y = "Frequency", title = "Term Frequency of 3-gram") +coord_flip()
+# ggplot(trigramfreq) + geom_bar(aes(x=row.names(trigramfreq), y = Frequency), stat = "identity") + labs(x = "Terms", y = "Frequency", title = "Term Frequency of 3-gram") +coord_flip()
 ```
+```{r trigram plot}
+barplot(trigramfreq$Frequency, names.arg = row.names(trigramfreq), main = "Most frequent Trigrams", ylab = "Frequency", las = 2)
+```
+
 
 # Conclusions and Next Steps
 
@@ -242,9 +251,11 @@ In addition, analysis of some of the less frequent terms indicated that the clea
 
 ## Next
 A lot of addtional work must be done to come close to any kind of predictive model that opeerates in real time.
+
  1. Continue developing a more robust cleaning technique.
  2. Chop up the overall data sets into separate training, testing. and cross validation data sets.
  3. Determine if predictive models vary  between the different formats: Tweet, Blog, or News.
  4. Different languages, multi lingual common phrases?
  5. Develop a strategy for handling profanity. Naughty vs. Nice predicter?
  6. Figure out how to deploy this as a Shiny.io app!
+
