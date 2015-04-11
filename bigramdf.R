@@ -59,6 +59,10 @@ file <- list(df2gram1, df2gram2, df2gram3, df2gram4, df2gram5, df2gram6,
 bigramMaster <- Reduce(function(x,y) merge(x, y, by = c("predictor", "prediction") , all = TRUE), file)
 bigramMaster$num <- rowSums(bigramMaster[, 3:12], na.rm = TRUE)
 bigramMaster <- bigramMaster[, c(1:2, 13)]
+bigramMaster <- by(bigramMaster, bigramMaster$predictor, head, n = 3)
+bigramMaster <- Reduce(rbind, bigramMaster)
+save(bigramMaster, file = "/Users/williammcdonald/CourseraCapstoneData/df2Master.Rdata")
+
 
 # Hash
 predict2hash <- Hash(bigramMaster)

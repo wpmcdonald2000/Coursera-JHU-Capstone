@@ -247,7 +247,7 @@ Using the supplied packages, we can show the most often occurring 2 and 3 word c
 
 It was apparent that more time was needed to explore the data sets and to use inferential statistics for multiple sample runs in order to compare resulting bigrams and trigrams. 
 
-In addition, analysis of some of the less frequent terms indicated that the cleaning was not entirely succesful. There still appeared to some randomly occurring characters preceding or superceding words that the cleanText function did not find. I would also like to spend more time figuring ou a way to handle conjunctions, numerical verbs, and chat acronyms or IM shorthand.
+In addition, analysis of some of the less frequent terms indicated that the cleaning was not entirely succesful. There still appeared to some randomly occurring characters preceding or superceding words that the cleanText function did not find. I would also like to spend more time figuring out a way to handle conjunctions, numerical verbs, and chat acronyms or IM shorthand.
 
 ## Next
 A lot of addtional work must be done to come close to any kind of predictive model that opeerates in real time.

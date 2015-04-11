@@ -44,7 +44,7 @@ trigramdf(allText)
 WS <- c(ls())
 rm(list = WS)
 
-Load saved files
+# Load saved files
 for (i in 1:10){
         name <- paste("/Users/williammcdonald/CourseraCapstoneData/df3gram", i, ".Rdata", sep = "")
         load(name)
@@ -60,6 +60,10 @@ file <- list(df3gram1, df3gram2, df3gram3, df3gram4, df3gram5, df3gram6,
 trigramMaster <- Reduce(function(x,y) merge(x, y, by = c("predictor", "prediction") , all = TRUE), file)
 trigramMaster$num <- rowSums(trigramMaster[, 3:12], na.rm = TRUE)
 trigramMaster <- trigramMaster[, c(1:2, 13)]
+trigramMaster <- by(trigramMaster, trigramMaster$predictor, head, n = 3)
+trigramMaster <- Reduce(rbind, trigramMaster)
+save(trigramMaster, file = "/Users/williammcdonald/CourseraCapstoneData/df3Master.Rdata")
+
 
 # Hash
 predict3hash <- Hash(trigramMaster)

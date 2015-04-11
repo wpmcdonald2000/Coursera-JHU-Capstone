@@ -61,8 +61,11 @@ file <- list(df4gram1, df4gram2, df4gram3, df4gram4 ,df4gram5, df4gram6,
 
 # Merge
 quadgramMaster <- Reduce(function(x,y) merge(x, y, by = c("predictor", "prediction") , all = TRUE), file)
-quadgramMaster$num <- rowSums(quadgramMaster[, 3:6], na.rm = TRUE)
-quadgramMaster <- quadgramMaster[, c(1:2, 7)]
+quadgramMaster$num <- rowSums(quadgramMaster[, 3:12], na.rm = TRUE)
+quadgramMaster <- quadgramMaster[, c(1:2, 13)]
+quadgramMaster <- by(quadgramMaster, quadgramMaster$predictor, head, n = 3)
+quadgramMaster <- Reduce(rbind, quadgramMaster)
+save(quadgramMaster, file = "/Users/williammcdonald/CourseraCapstoneData/df4Master.Rdata")
 
 # Hash
 predict4hash <- Hash(quadgramMaster)

@@ -23,7 +23,6 @@ cleanText <- function(text){
         x <- stripWhitespace(x)
         x <- removePunctuation(x, preserve_intra_word_dashes = TRUE)
         x <= removeNumbers(x)
-        # x <- strsplit(x, "\\W")
         return(x)
 }
 
