@@ -1,4 +1,4 @@
-# setwd("/Users/williammcdonald/CourseraCapstoneData/")
+setwd("/Users/williammcdonald/CourseraCapstoneData/")
 # source("BuildModel.R")
 #load('hash2.RData')
 #load('hash3.RData')

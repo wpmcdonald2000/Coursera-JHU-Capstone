@@ -65,5 +65,6 @@ save(bigramMaster, file = "/Users/williammcdonald/CourseraCapstoneData/df2Master
 
 
 # Hash
+load("/Users/williammcdonald/CourseraCapstoneData/df2Master.Rdata")
 predict2hash <- Hash(bigramMaster)
 save(predict2hash, file = '/Users/williammcdonald/CourseraCapstoneData/predict2hash.RData')

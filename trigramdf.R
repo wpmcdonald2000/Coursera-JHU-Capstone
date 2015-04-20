@@ -66,6 +66,7 @@ save(trigramMaster, file = "/Users/williammcdonald/CourseraCapstoneData/df3Maste
 
 
 # Hash
+load("/Users/williammcdonald/CourseraCapstoneData/df3Master.Rdata")
 predict3hash <- Hash(trigramMaster)
 save(predict3hash, file = '/Users/williammcdonald/CourseraCapstoneData/predict3hash.RData')
 

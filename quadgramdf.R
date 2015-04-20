@@ -68,5 +68,6 @@ quadgramMaster <- Reduce(rbind, quadgramMaster)
 save(quadgramMaster, file = "/Users/williammcdonald/CourseraCapstoneData/df4Master.Rdata")
 
 # Hash
+load("/Users/williammcdonald/CourseraCapstoneData/df4Master.Rdata")
 predict4hash <- Hash(quadgramMaster)
 save(predict4hash, file = '/Users/williammcdonald/CourseraCapstoneData/predict4hash.RData')
