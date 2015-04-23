@@ -38,7 +38,7 @@ predictAll <- function(x) {
                         if (!is.null(p2)) {
                                 p2
                         } else {
-                                'the'
+                                'sorry, i have no idea what you are saying'
                         }
                 }
         }
