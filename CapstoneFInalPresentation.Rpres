@@ -8,14 +8,14 @@ transition: rotate
 
 Overview
 ========================================================
-An exploration into the difficulties of creating a text prediction App.
+The capstone project was an exploration into the difficulties of creating a text prediction App on  the Shiny.io server.
 
-My predictive app can be found at the following shinyapps.io URL: [Text Predictor](https://www.shinyapps.io/admin/#/application/22724)
+My predictive app can be found here: 
+(http://wpmcdonald.shinyapps.io/Shiny_app)
 
-The interface is straightforward, as you type text in the "Predict Word" Text Box
-The application will display the predicted next word in the display area. 
+The interface is straightforward, as you type text in the "Input Section" Text Box, the application will display the predicted next word in the display area. 
 
-The prediction is based on a frequency analysis of sample phrases in a supplied text data set
+The prediction is based on a frequency analysis of sample phrases in a supplied text data set. More in depth information about the methodology, trials and pitfalls can be found on the "Story" tab of the app.
 
 Method and Madness
 ========================================================
@@ -28,9 +28,9 @@ Underlying the app is an analysis of an available corpus of text.
 
 Model and Implementation
 ========================================================
-The app runs on code that stores the n-grams and their frequencies as hash tables. As text is entered into the text box, predicted text matches are fetched from those tables .
+The app runs on code that stores the top 3 n-grams and their frequencies in a single hash table. The hash table slices the n-grams into a "predictor" phrase of 1 to 3 words and the "predicted word" result (the last word of the n-gram). As text is entered into the text box, predicted word matches are fetched from those tables based on the predictor phrase.
 
-Using a "Stupid" backoff model [(as proposed here)](http://www.cs.columbia.edu/~smaskey/CS6998-0412/supportmaterial/langmodel_mapreduce.pdf) the last 3 words of the phrase is checked for matches in a 4-gram table. If no match is found, the process continues, checking the last 2 words against a 3-gram table, then finally the last word is checked against the predictors in the 2-gram table. In all cases, matches halt the program until new or additional text is entered. If no match is found, the word "the" is returned as the most commonly used word.
+Using a "Stupid" backoff model [(as proposed here)](http://www.cs.columbia.edu/~smaskey/CS6998-0412/supportmaterial/langmodel_mapreduce.pdf) the first 3 words of the a 4 word phrase is checked for matches. If no match is found, the process continues, checking the first 2 words of 3 word phrases, then finally the first word is checked against the predictors in a two word phrase. In all cases, matches halt the program until new or additional text is entered. If no text is entered the program asks for input.
 
 Further Work
 ========================================================
