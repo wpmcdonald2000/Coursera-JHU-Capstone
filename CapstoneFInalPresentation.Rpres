@@ -15,7 +15,7 @@ My predictive app can be found here:
 
 The interface is straightforward, as you type text in the "Input Section" Text Box, the application will display the predicted next word in the display area. 
 
-The prediction is based on a frequency analysis of sample phrases in a supplied text data set. More in depth information about the methodology, trials and pitfalls can be found on the "Story" tab of the app.
+The prediction is based on a frequency analysis of sample phrases in a supplied text data set. More in depth information about the methodology, trials and pitfalls can be found on the "Methods" tab of the app.
 
 Method and Madness
 ========================================================
@@ -36,7 +36,7 @@ Further Work
 ========================================================
 <small>Okay, I admit it. This project kicked me in the ... (expletive deleted)
 The process was very humbling and showed all my weaknesses in both coding in R as well as working out methods to incorporate ideas that I thought might be beneficial to the resutling app. For Example:
- 1. A spelling checker on the front end for text entry in the app. Any analysis of n-grams from supplied texts only work if they have something to match. Mispellings throw all predictions, regardless of how they are determined, out the window.
+ 1. A "fuzzy" spelling checker that would allow near matches to be included in the predictions. Any analysis of n-grams from supplied texts only work if they have something to match. Mispellings throw all predictions, regardless of how they are determined, out the window.
  2. My feeble skills were not up to the task of creating an app that adjusted to the user, learning from their own idiosyncratic usage of language. 
  3. Exploration of some modeling techniques designed to take into account parts of speech or sentence structure! I briefly explored some of the work [Google Books Ngram Viewer](http://storage.googleapis.com/books/ngrams/books/datasetsv2.html) has been doing developing an n-gram corpus but quickly got overwhelmed. I do not know if "diagramming sentences" can work efficently in a predictive environment.</small>
 
